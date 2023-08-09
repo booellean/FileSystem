@@ -4,7 +4,7 @@ This branch is for assignment 4. If you were trying to view another assignment, 
 
 ## Instructions to Run
 
-To run the app, double click the shortcut `/FileSystemApp.exe`. **If the shortcut did not use a relative path**, open the executable in `/publish/FileSystemApp.exe`. Code can be reviewed in the `/FileSystemApp/` directory.
+To run the app, double click the shortcut `/ShortcutFileSystemApp.exe`. **If the shortcut did not use a relative path**, open the executable in `/publish/FileSystemApp.exe`. Code can be reviewed in the `/FileSystemApp/` directory.
 
 The app will prompt you to log in. There are two users you can log in with.
 1. `admin` -
@@ -31,7 +31,7 @@ Once logged in, you can chose from the following commands:
 ## Behind the scenes
 The fake data is located in a file called `/publish/fake_dat.json`. This file is updated with every change and will persist from session to session.
 
-Since the data is fake, I did not work too hard at creating clean casting models for the JSON. The JSON casts can be found in `/adapters/FakeDiskAdapter.cs`.
+Since the data is fake, I did not work too hard at creating clean casting models for the JSON. The JSON casts can be found in `/FileSystemApp/adapters/FakeDiskAdapter.cs`.
 
 ## Changes from Last Assignment
 
@@ -39,11 +39,11 @@ This branch has major over haul of the code to better fit SOLID principles per t
 
 "Open/Closed Principle: Most classes are not designed with easy extensibility in mind Heavy use of conditional logic rather than polymorphism Interface Segregation Principle: Interfaces are not really leveraged to segment APIs. What I mean by that is There is little use of interfaces to define the outward public APIs for the classes. The classes expose their implementation details directly rather than behind interfaces."
 
-The class `FileSystemCommand` has been renamed to `InputListener` and is the only class that still lives in `Program.cs`. All other classes have been separated into folders based on their logic. `FileSystem.cs` is the only class that still lives in the root directory.
+The class `FileSystemCommand` has been renamed to `InputListener` and is the only class that still lives in `/FileSystemApp/Program.cs`. All other classes have been separated into folders based on their logic. `/FileSystemApp/FileSystem.cs` is the only class that still lives in the root directory.
 
-`InputListener` has had all it's logic (originally switch statements) separated into the Command design. These Commands are found in `/commands`. The Reciever for these commands is the `FileSystem` class.
+`InputListener` has had all it's logic (originally switch statements) separated into the Command design. These Commands are found in `/FileSystemApp/commands`. The Reciever for these commands is the `FileSystem` class.
 
-Interfaces have been created for this application found in the `/interfaces` folder, however, please note that interfaces in C# work a bit different than Java, especially when abstract classes are in use. Because of this, some logic in the `/models/Node` file that would be in an interface in Java remains in the abstract class due to implementation. A major interface that was added is `IUnique`, which defines that classes will hold unique properties `Name` and `Id`.
+Interfaces have been created for this application found in the `/FileSystemApp/interfaces` folder, however, please note that interfaces in C# work a bit different than Java, especially when abstract classes are in use. Because of this, some logic in the `/FileSystemApp/models/Node` file that would be in an interface in Java remains in the abstract class due to implementation. A major interface that was added is `IUnique`, which defines that classes will hold unique properties `Name` and `Id`.
 
 The `Node`, `File`, and `Directory` classes have had major overhauls to reduce the amount of conditional logic found in `FileSystem` and `FakeDiskAdapter` (Reminder, `File` and `Directory` class extend the abstract class `Node`). The `Node` class now has abstract methods in place for all Directory methods, and the `File` class will throw a `NotImplementedException` if it is called. This allows for more readable code with all necessary logic living within the class itself rather than the `FileSystem` or other classes.
 
