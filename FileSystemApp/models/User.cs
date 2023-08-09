@@ -97,8 +97,8 @@ class User: IUnique, IGroups, ICRUDX
         for(int ii = 0; ii < array.Length; ii++)
         {
             string key = array[ii];
-            Node child = directory.GetChildNode(key);
-            string perms = GetUserPermissionString(child);
+            Node nodeChild = directory.GetChildNode(key);
+            string perms = GetUserPermissionString(nodeChild);
             Console.WriteLine("| {0,-20} | {1,20} |", perms, key);
         }
     }
@@ -129,40 +129,40 @@ class User: IUnique, IGroups, ICRUDX
     // CRUDX
     public void CanCreate(Node node)
     {
-        if (!HasPermission(0, node)) throw new ArgumentException("You are not permitted to create here.");
+        if (!HasPermission(0, node)) throw new Exception("You are not permitted to create here.");
     }
 
     public void CanRead(Node node)
     {
-        if (!HasPermission(1, node)) throw new ArgumentException("You are not permitted to read that {0}.", node.DataType());
+        if (!HasPermission(1, node)) throw new Exception("You are not permitted to read that " + node.DataType() + ".");
     }
 
     public void CanUpdate(Node node)
     {
-        if (!HasPermission(2, node)) throw new ArgumentException("You are not permitted to update this {0}.", node.DataType());
+        if (!HasPermission(2, node)) throw new Exception("You are not permitted to update this " + node.DataType() + ".");
     }
 
     public void CanDelete(Node? node)
     {
         // If a user tried to delete a directory that doesn't exist (usually root)
-        if ( node == null ) throw new ArgumentException("Cannot Delete the root directory.");
+        if ( node == null ) throw new Exception("Cannot Delete the root directory.");
     
         // If a user is trying to delete a directory with nodes in it
         if (String.Compare(node.DataType(), "directory") == 0 && ((Directory)node).Nodes.Count > 0)
         {
-            throw new ArgumentException("Cannot delete a directory with files in it.");
+            throw new Exception("Cannot delete a directory with files in it.");
         }
 
         // Otherwise if they just don't have this permission...
-        if (!HasPermission(3, node)) throw new ArgumentException("You are not permitted to delete this {0}.", node.DataType());
+        if (!HasPermission(3, node)) throw new Exception("You are not permitted to delete this " + node.DataType() + ".");
     }
 
     public void CanExecute(Node node)
     {
         // If the Node is not a file but we are checking the eXecutable permission, always return false
-        if (!node.IsFile()) throw new ArgumentException("You cannot \"execute\" a directory.");
+        if (!node.IsFile()) throw new Exception("You cannot \"execute\" a directory.");
 
-        if (!HasPermission(4, node)) throw new ArgumentException("You are not permitted to execute this file.");
+        if (!HasPermission(4, node)) throw new Exception("You are not permitted to execute this file.");
     }
 
     private bool HasPermission(int index, Node node)
