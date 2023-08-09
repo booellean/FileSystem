@@ -1,370 +1,174 @@
 {
-    "Root": {
-        "Id": 1,
-        "Name": "root",
-        "Groups": [
-            1,
-            3
-        ],
-        "Extension": null,
-        "Address": null,
-        "user_permissions": null,
-        "Nodes": [
+    "Root" : {
+        "name" : "root",
+        "groups" : [1,3],
+        "nodes" : [
             {
-                "Id": 2,
-                "Name": "pictures",
-                "Groups": [
-                    2
-                ],
-                "Extension": null,
-                "Address": null,
-                "user_permissions": null,
-                "Nodes": [
-                    {
-                        "Id": 3,
-                        "Name": "photos",
-                        "Groups": [
-                            2
-                        ],
-                        "Extension": null,
-                        "Address": null,
-                        "user_permissions": null,
-                        "Nodes": [
+                "name" : "pictures",
+                "groups" : [2],
+                "nodes" : [
+                     {
+                        "name" : "photos",
+                        "groups" : [2],
+                        "nodes" : [
                             {
-                                "Id": 4,
-                                "Name": "grand_canyon",
-                                "Groups": [
-                                    2
-                                ],
-                                "Extension": "png",
-                                "Address": [
-                                    1,
-                                    0,
-                                    1
-                                ],
-                                "user_permissions": null,
-                                "Nodes": null
+                                "name" : "grand_canyon",
+                                "groups" : [2],
+                                "extension": "png",
+                                "address" : [1,0,1]
                             },
                             {
-                                "Id": 5,
-                                "Name": "mt.everest",
-                                "Groups": [
-                                    2
-                                ],
-                                "Extension": "png",
-                                "Address": [
-                                    1,
-                                    0,
-                                    1
-                                ],
-                                "user_permissions": null,
-                                "Nodes": null
+                                "name" : "mt.everest",
+                                "groups" : [2],
+                                "extension": "png",
+                                "address" : [1,0,1]
                             },
                             {
-                                "Id": 6,
-                                "Name": "1st_birthday",
-                                "Groups": [
-                                    2
-                                ],
-                                "Extension": "png",
-                                "Address": [
-                                    1,
-                                    0,
-                                    1
-                                ],
-                                "user_permissions": null,
-                                "Nodes": null
+                                "name" : "1st_birthday",
+                                "groups" : [2],
+                                "extension": "png",
+                                "address" : [1,0,1]
                             }
                         ]
                     },
                     {
-                        "Id": 7,
-                        "Name": "scans",
-                        "Groups": [
-                            2
-                        ],
-                        "Extension": null,
-                        "Address": null,
-                        "user_permissions": null,
-                        "Nodes": [
+                        "name" : "scans",
+                        "groups" : [2],
+                        "nodes" : [
                             {
-                                "Id": 8,
-                                "Name": "2012",
-                                "Groups": [
-                                    2
-                                ],
-                                "Extension": null,
-                                "Address": null,
-                                "user_permissions": null,
-                                "Nodes": [
+                                "name" : "2012",
+                                "groups" : [2],
+                                "nodes" : [
                                     {
-                                        "Id": 9,
-                                        "Name": "W2",
-                                        "Groups": [
-                                            2
-                                        ],
-                                        "Extension": "jpg",
-                                        "Address": [
-                                            1,
-                                            0,
-                                            1
-                                        ],
-                                        "user_permissions": null,
-                                        "Nodes": null
+                                        "name" : "W2",
+                                        "groups" : [2],
+                                        "extension": "jpg",
+                                        "address" : [1,0,1]
                                     }
                                 ]
                             },
                             {
-                                "Id": 10,
-                                "Name": "photo_ref_1",
-                                "Groups": [
-                                    2
-                                ],
-                                "Extension": "jpg",
-                                "Address": [
-                                    1,
-                                    0,
-                                    1
-                                ],
-                                "user_permissions": null,
-                                "Nodes": null
+                                "name" : "photo_ref_1",
+                                "groups" : [2],
+                                "extension": "jpg",
+                                "address" : [1,0,1]
                             },
                             {
-                                "Id": 11,
-                                "Name": "photo_ref_2",
-                                "Groups": [
-                                    2
-                                ],
-                                "Extension": "jpg",
-                                "Address": [
-                                    1,
-                                    0,
-                                    1
-                                ],
-                                "user_permissions": null,
-                                "Nodes": null
+                                "name" : "photo_ref_2",
+                                "groups" : [2],
+                                "extension": "jpg",
+                                "address" : [1,0,1]
                             },
                             {
-                                "Id": 12,
-                                "Name": "wedding_film",
-                                "Groups": [
-                                    2
-                                ],
-                                "Extension": "jpg",
-                                "Address": [
-                                    1,
-                                    0,
-                                    1
-                                ],
-                                "user_permissions": null,
-                                "Nodes": null
+                                "name" : "wedding_film",
+                                "groups" : [2],
+                                "extension": "jpg",
+                                "address" : [1,0,1]
                             }
                         ]
                     },
                     {
-                        "Id": 13,
-                        "Name": "landscape",
-                        "Groups": [
-                            2
-                        ],
-                        "Extension": "png",
-                        "Address": [
-                            1,
-                            0,
-                            1
-                        ],
-                        "user_permissions": null,
-                        "Nodes": null
+                        "name" : "landscape",
+                        "groups" : [2],
+                        "extension": "png",
+                        "address" : [1,0,1]
                     }
                 ]
             },
             {
-                "Id": 14,
-                "Name": "documents",
-                "Groups": [
-                    2
-                ],
-                "Extension": null,
-                "Address": null,
-                "user_permissions": {
-                    "2": "11111"
-                },
-                "Nodes": [
+                "name" : "documents",
+                "groups" : [2],
+                "nodes" : [
                     {
-                        "Id": 15,
-                        "Name": "personal",
-                        "Groups": [
-                            2
-                        ],
-                        "Extension": null,
-                        "Address": null,
-                        "user_permissions": null,
-                        "Nodes": [
+                        "name" : "personal",
+                        "groups" : [2],
+                        "nodes" : [
                             {
-                                "Id": 16,
-                                "Name": "assignment_1",
-                                "Groups": [
-                                    2
-                                ],
-                                "Extension": "docx",
-                                "Address": [
-                                    1,
-                                    0,
-                                    1
-                                ],
-                                "user_permissions": null,
-                                "Nodes": null
+                                "name" : "assignment_1",
+                                "groups" : [2],
+                                "extension" : "docx",
+                                "address" : [1,0,1]
                             },
                             {
-                                "Id": 17,
-                                "Name": "assignment_2",
-                                "Groups": [
-                                    2
-                                ],
-                                "Extension": "docx",
-                                "Address": [
-                                    1,
-                                    0,
-                                    1
-                                ],
-                                "user_permissions": null,
-                                "Nodes": null
+                                "name" : "assignment_2",
+                                "groups" : [2],
+                                "extension" : "docx",
+                                "address" : [1,0,1]
                             }
                         ]
                     },
                     {
-                        "Id": 18,
-                        "Name": "business",
-                        "Groups": [
-                            2
-                        ],
-                        "Extension": null,
-                        "Address": null,
-                        "user_permissions": {
-                            "2": "11111"
-                        },
-                        "Nodes": [
+                        "name" : "business",
+                        "groups" : [2],
+                        "nodes" : [
                             {
-                                "Id": 19,
-                                "Name": "contract_newark",
-                                "Groups": [
-                                    2
-                                ],
-                                "Extension": "pdf",
-                                "Address": [
-                                    1,
-                                    0,
-                                    1
-                                ],
-                                "user_permissions": null,
-                                "Nodes": null
+                                "name" : "contract_newark",
+                                "groups" : [2],
+                                "extension" : "pdf",
+                                "address" : [1,0,1]
                             },
                             {
-                                "Id": 20,
-                                "Name": "contract_omaha",
-                                "Groups": [
-                                    2
-                                ],
-                                "Extension": "pdf",
-                                "Address": [
-                                    1,
-                                    0,
-                                    1
-                                ],
-                                "user_permissions": null,
-                                "Nodes": null
+                                "name" : "contract_omaha",
+                                "groups" : [2],
+                                "extension" : "pdf",
+                                "address" : [1,0,1]
                             }
                         ]
                     }
                 ]
             },
             {
-                "Id": 22,
-                "Name": "files",
-                "Groups": [
-                    3
-                ],
-                "Extension": null,
-                "Address": null,
-                "user_permissions": null,
-                "Nodes": [
+                "name" : "files",
+                "groups" : [3],
+                "nodes" : [
                     {
-                        "Id": 23,
-                        "Name": "contract_denver",
-                        "Groups": [
-                            3
-                        ],
-                        "Extension": "pdf",
-                        "Address": [
-                            1,
-                            0,
-                            1
-                        ],
-                        "user_permissions": {
-                            "1": "11001"
-                        },
-                        "Nodes": null
+                        "name" : "contract_denver",
+                        "groups" : [3],
+                        "extension" : "pdf",
+                        "address" : [1,0,1],
+                        "user_permissions" : { "1" : "11001" }
                     },
                     {
-                        "Id": 24,
-                        "Name": "private_assets",
-                        "Groups": [
-                            1
-                        ],
-                        "Extension": "pdf",
-                        "Address": [
-                            1,
-                            0,
-                            1
-                        ],
-                        "user_permissions": null,
-                        "Nodes": null
+                        "name" : "private_assets",
+                        "groups" : [1],
+                        "extension" : "pdf",
+                        "address" : [1,0,1]
                     }
                 ]
             }
         ]
     },
-    "Users": [
+    "Groups" : [
         {
-            "Id": 1,
-            "Name": "admin",
-            "Password": "admin",
-            "Groups": [
-                1,
-                3
-            ]
-        },
-        {
-            "Id": 2,
-            "Name": "guest",
-            "Password": null,
-            "Groups": [
-                2,
-                3
-            ]
-        }
-    ],
-    "Groups": [
-        {
-            "Id": 1,
-            "Name": "root",
-            "Permissions": "11111",
+            "_id" : 1,
+            "Name" : "root",
+            "Permissions" : "11111",
             "Weight": 0
         },
         {
-            "Id": 2,
-            "Name": "guest",
-            "Permissions": "11101",
+            "_id" : 2,
+            "Name" : "guest",
+            "Permissions" : "11101",
             "Weight": 10
         },
         {
-            "Id": 3,
-            "Name": "public",
-            "Permissions": "11001",
+            "_id" : 3,
+            "Name" : "public",
+            "Permissions" : "11001",
             "Weight": 100
         }
     ],
-    "NextNodeId": 27,
-    "NextGroupId": 4,
-    "NextUserId": 3
+    "Users" : [
+        {
+            "_id" : 1,
+            "Name" : "admin",
+            "Groups" : [1,3],
+            "Password" : "admin"
+        },
+        {
+            "_id" : 2,
+            "Name" : "baby",
+            "Groups" : [2,3]
+        }
+    ]
 }
