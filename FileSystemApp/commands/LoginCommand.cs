@@ -9,10 +9,12 @@ class LoginCommand: ICommand
         Receiver = receiver;
     }
     // Execute a login request
-    public bool Execute(string[] arguments, ref string CWD, ref int userId)
+    public bool Execute(string[] arguments, ref string CWD, ref int userId, ref string authToken)
     {
         Console.WriteLine("Please Enter your login information");
-        userId = Receiver.LoginUser(userId);
+        (int id, string token) = Receiver.LoginUser(userId, authToken);
+        userId = id;
+        authToken = token;
 
         return true;
     }

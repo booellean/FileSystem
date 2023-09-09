@@ -9,7 +9,7 @@ class ExitCommand: ICommand
         Receiver = receiver;
     }
     // Exit the File System
-    public bool Execute(string[] arguments, ref string CWD, ref int userId)
+    public bool Execute(string[] arguments, ref string CWD, ref int userId, ref string authToken)
     {
         Console.WriteLine("Thank you! Goodbye.");
         

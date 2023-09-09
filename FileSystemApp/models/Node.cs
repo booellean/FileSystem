@@ -6,15 +6,12 @@ abstract class Node : IUnique, IGroups
     public string Name { get; }
     protected Dictionary<int, CRUDX> Permissions = new Dictionary<int, CRUDX>();
     public Group[] Groups { get; }
-    // TODO: perhaps delete... This is the fake address on the "disk". It's an array of indices for the json data
-    public int[] LocalAddress { get; set; }
 
-    public Node(int id, string name, Group[] groups, int[] localAddress)
+    public Node(int id, string name, Group[] groups)
     {
         Id = id;
         Name = name;
         Groups = groups;
-        LocalAddress = localAddress;
     }
 
     // Common functions amongst files and directories

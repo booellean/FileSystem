@@ -9,7 +9,7 @@ class DeleteCommand: ICommand
         Receiver = receiver;
     }
     // Execute a file or directory deletion
-    public bool Execute(string[] arguments, ref string CWD, ref int userId)
+    public bool Execute(string[] arguments, ref string CWD, ref int userId, ref string authToken)
     {
         // TODO: more thorough error checking
         if (arguments.Length != 2) {
@@ -19,7 +19,7 @@ class DeleteCommand: ICommand
         string nodeName = Helpers.ConformDirectory(arguments[1], CWD);
 
         // This will throw an error if the directory wasn't found
-        Receiver.DeleteNode(nodeName, userId);
+        Receiver.DeleteNode(authToken, nodeName, userId);
 
         return true;
     }

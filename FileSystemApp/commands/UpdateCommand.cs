@@ -9,7 +9,7 @@ class UpdateCommand: ICommand
         Receiver = receiver;
     }
     // Execute a file or directory permissions update
-    public bool Execute(string[] arguments, ref string CWD, ref int userId)
+    public bool Execute(string[] arguments, ref string CWD, ref int userId, ref string authToken)
     {
         // TODO: more thorough error checking
         if (arguments.Length != 3) {
@@ -20,7 +20,7 @@ class UpdateCommand: ICommand
         string nodeName = Helpers.ConformDirectory(arguments[2], CWD);
 
         // This will throw an error if the directory wasn't found
-        Receiver.UpdateNode(permissions, nodeName, userId);
+        Receiver.UpdateNode(authToken, permissions, nodeName, userId);
 
         return true;
     }

@@ -7,8 +7,8 @@ class Directory : Node
     protected string[] OrderedDirectories = Array.Empty<string>();
     protected string[] OrderedFiles  = Array.Empty<string>();
 
-    public Directory(int id, string name, Group[] groups, int[] localAddress) :
-    base(id, name, groups, localAddress)
+    public Directory(int id, string name, Group[] groups) :
+    base(id, name, groups)
     { }
 
     public override string DataType()

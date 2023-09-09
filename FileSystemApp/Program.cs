@@ -27,6 +27,7 @@ internal class Program
         // Flexible assignment from instance to instance, but uses the same unique instantiations
         protected static string CWD = "/";
         protected static int UserId = -1;
+        protected static string AuthToken = "";
         protected FileSystem System = FileSystem.Instance;
         protected Dictionary<string, ICommand> Commands;
         
@@ -46,11 +47,13 @@ internal class Program
         public void InitiateLogin()
         {
             // Run the login command
-            Commands["login"].Execute(Array.Empty<string>(), ref CWD, ref UserId);
+            Commands["login"].Execute(Array.Empty<string>(), ref CWD, ref UserId, ref AuthToken);
 
             // A valid user was not found. Exit
             if (UserId == -1) return;
 
+            // Call "FinalizeSetup" so Singleton has at least the root mounted when 1 user logs in
+            System.FinalizeSetup(AuthToken);
             Listen();
         }
 
@@ -82,7 +85,7 @@ internal class Program
 
                     // See if command is valid based on Commands property
                     if (Commands.ContainsKey(commandKey)) {
-                        listening = Commands[commandKey].Execute(arguments, ref CWD, ref UserId);
+                        listening = Commands[commandKey].Execute(arguments, ref CWD, ref UserId, ref AuthToken);
                     } else {
                         Console.WriteLine(requestValidCommand);
                     }

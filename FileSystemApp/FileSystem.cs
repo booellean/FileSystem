@@ -5,10 +5,9 @@ namespace FileSystemApp;
 class FileSystem
 {
     // Unique instances across all instantiations
-    protected static Directory Root;
+    protected static Directory? Root = null;
     protected static Group[] Groups;
     protected static User[] Users;
-    protected static User? RootUser;
     private static FileSystem _instance;
     // DEBUG: This is fake data to login and write files/directories. Delete when reading from an actual disk
     private static DiskAdapter _disk;
@@ -17,22 +16,7 @@ class FileSystem
     private FileSystem()
     {
         // DEBUG: Instantiate our disk adapter
-        _disk = new FakeDiskAdapter();
-
-        // Instantiate fake groups and users
-        Groups = _disk.GetGroups();
-        Users = _disk.GetUsers();
-        RootUser = Array.Find(Users, user => user.Name.Equals("admin"));
-
-        // Safety check
-        if (RootUser == null) throw new Exception("Root user does not exist");
-
-        // Mount Root
-        int[] rootDiskAddress = Array.Empty<int>();
-        Root = (Directory)_disk.MountDisk(rootDiskAddress);
-
-        // Add Children;
-        _disk.MountDiskChildren(Root);
+        _disk = new ApiDiskAdapter();
     }
 
     // Our Singleton!
@@ -47,47 +31,41 @@ class FileSystem
         }
     }
 
-    public int LoginUser(int requestingUserId)
+    public (int, string) LoginUser(int requestingUserId, string requestingUserToken)
     {
         string? input = Console.ReadLine();
 
         if (input != null) {
             if (input.Equals("cancel")) {
                 Console.WriteLine("Cancelling Login Attempt.\n");
-                return requestingUserId;
+                return (requestingUserId, requestingUserToken);
             }
 
-            // Try to find if a user with a name matching the input exists
-            User? probableUser = Array.Find(Users, user => user.Name.Equals(input));;
-
-            if (probableUser == null) {
-                Console.WriteLine("No User was found by that name. Please try again.\n");
-                return LoginUser(requestingUserId);
+            try {
+                return _disk.LoginUser(input);
+            } catch(Exception error) {
+                // TODO: Fix...
+                Console.WriteLine("WILL FIX");
             }
-
-            if (probableUser.IsPasswordProtected()) {
-                Console.WriteLine("This User is password protected. Please enter a password.\n");
-                return VerifyUser(probableUser, requestingUserId);
-            }
-
-            return probableUser.Id;
+            
         }
 
-        return requestingUserId;
+        return (requestingUserId, requestingUserToken);
     }
 
-    public int VerifyUser(User loginUser, int requestingUserId, int attempts = 1)
+    public void FinalizeSetup(string authToken)
     {
-        string? input = Console.ReadLine();
+        if (Root == null) {
+            // Instantiate groups and users
+            Groups = _disk.GetGroups(authToken);
+            Users = _disk.GetUsers(authToken);
 
-        if (loginUser.PasswordMatched(input)) return loginUser.Id;
+            // Mount Root
+            Root = (Directory)_disk.MountDisk(authToken);
 
-        if (attempts > 2) {
-            Console.WriteLine("Too many login attempts. Cancelling...\n");
-            return requestingUserId;
+            // Add Children
+            _disk.MountDiskChildren(authToken, Root);
         }
-
-        return VerifyUser(loginUser, requestingUserId, ++attempts);
     }
 
     private User GetUser(int userId)
@@ -99,7 +77,7 @@ class FileSystem
         return user;
     }
 
-    private (Node, Directory?) GetNode(string directoryPath, User currentUser)
+    private (Node, Directory?) GetNode(string authToken, string directoryPath, User currentUser)
     {
         // If the string is just root name, return the root
         if (directoryPath.Equals("/")) return (Root, null);
@@ -117,7 +95,7 @@ class FileSystem
             parent = (Directory)workingNode;
 
             // Make sure directory disk has been mounted
-            _disk.MountDiskChildren(workingNode);
+            _disk.MountDiskChildren(authToken, workingNode);
             // Get the next child if mounting passes
             workingNode = workingNode.GetChildNode(key);
             // Check for Read Permissions before continuing
@@ -125,19 +103,19 @@ class FileSystem
         }
 
         // One last mount of our found node
-        _disk.MountDiskChildren(workingNode);
+        _disk.MountDiskChildren(authToken, workingNode);
 
         return (workingNode, parent);
     }
             
-    public string ChangeDirectory(string directoryPath, int currentUserId)
+    public string ChangeDirectory(string authToken, string directoryPath, int currentUserId)
     {
         User currentUser = GetUser(currentUserId);
-        (Node directory, _) = GetNode(directoryPath, currentUser);
+        (Node directory, _) = GetNode(authToken, directoryPath, currentUser);
 
         // This will verify it is a directory and throw an error if it is not
         // Plus extra caching!!!
-        _disk.MountDiskChildren(directory);
+        _disk.MountDiskChildren(authToken, directory);
 
         Console.WriteLine("Directory was changed.");
 
@@ -147,7 +125,7 @@ class FileSystem
 
     // CRUD Directories
     // Create
-    public void CreateNode(string nodeName, string directoryPath, int currentUserId)
+    public void CreateNode(string authToken, string nodeName, string directoryPath, int currentUserId)
     {
         // TODO: fix this so we can create a file outside of CWD
         if (nodeName.Contains('/')) {
@@ -156,7 +134,7 @@ class FileSystem
         }
 
         User currentUser = GetUser(currentUserId);
-        (Node CWD, _) = GetNode(directoryPath, currentUser);
+        (Node CWD, _) = GetNode(authToken, directoryPath, currentUser);
 
         // Check Read
         currentUser.CanCreate(CWD);
@@ -165,8 +143,8 @@ class FileSystem
 
         // TODO: If catch block goes off, revert the node Value
         try {
-            int[] locationAddress = _disk.AddData(nodeName, CWD.LocalAddress, currentUser.Groups);
-            node = _disk.MountDisk(locationAddress);
+            int nodeId = _disk.AddData(authToken, nodeName, CWD.Id, currentUser.Groups);
+            node = _disk.MountDisk(authToken, nodeId);
             CWD.AddNode(node);
             Console.WriteLine("Successfully created item.");
         } catch(Exception error) {
@@ -178,10 +156,10 @@ class FileSystem
     }
 
     // Read
-    public void ReadNode(string directoryPath, int currentUserId)
+    public void ReadNode(string authToken, string directoryPath, int currentUserId)
     {
         User currentUser = GetUser(currentUserId);
-        (Node directory, _) = GetNode(directoryPath, currentUser);
+        (Node directory, _) = GetNode(authToken, directoryPath, currentUser);
 
         // Check read
         currentUser.CanRead(directory);
@@ -190,11 +168,11 @@ class FileSystem
     }
 
     // Update
-    public void MoveNode(string nodeName, string targetDirectory, int currentUserId)
+    public void MoveNode(string authToken, string nodeName, string targetDirectory, int currentUserId)
     {
         User currentUser = GetUser(currentUserId);
-        (Node fileOrDirectory, Directory? parent) = GetNode(nodeName, currentUser);
-        (Node destination, _) = GetNode(targetDirectory, currentUser);
+        (Node fileOrDirectory, Directory? parent) = GetNode(authToken, nodeName, currentUser);
+        (Node destination, _) = GetNode(authToken, targetDirectory, currentUser);
 
         // Check user can create here
         currentUser.CanCreate(destination);
@@ -205,14 +183,13 @@ class FileSystem
         try {
             if (parent != null) {
                 // Get our node's new location and the old location's new nodes
-                int[] locationAddress = _disk.MoveData(fileOrDirectory.LocalAddress, destination.LocalAddress);
+                _disk.MoveData(authToken, fileOrDirectory.Id, destination.Id);
 
                 // Delete the node from the old directory and update child addresses
                 parent.DeleteNode(fileOrDirectory);
-                _disk.UpdateDiskMount(parent);
+                _disk.UpdateDiskMount(authToken, parent);
 
                 // Assign the address to the new location, then add it to the destinatino node
-                fileOrDirectory.LocalAddress = locationAddress;
                 destination.AddNode(fileOrDirectory);
 
                 // Successful!
@@ -223,7 +200,7 @@ class FileSystem
         }
     }
 
-    public void UpdateNode(string permissions, string nodeName, int currentUserId, int? targetUserId = null)
+    public void UpdateNode(string authToken, string permissions, string nodeName, int currentUserId, int? targetUserId = null)
     {
         User currentUser = GetUser(currentUserId);
         User targetUser = currentUser;
@@ -237,30 +214,30 @@ class FileSystem
         currentUser.HasElevatedStatus(targetUser);
 
         // Get Node
-        (Node node, _) = GetNode(nodeName, currentUser);
+        (Node node, _) = GetNode(authToken, nodeName, currentUser);
 
         // Check can update
         currentUser.CanUpdate(node);
 
-        _disk.UpdateData(node.LocalAddress, permissions, targetUser.Id.ToString());
+        _disk.UpdateData(authToken, node.Id, permissions, targetUser.Id.ToString());
         node.UpdatePermissions(targetUser.Id, permissions);
         Console.WriteLine("Successfully updated permissions.");
     }
 
     // Delete
-    public void DeleteNode(string nodeName, int currentUserId)
+    public void DeleteNode(string authToken, string nodeName, int currentUserId)
     {
         User currentUser = GetUser(currentUserId);
-        (Node fileOrDirectory, Directory? parent) = GetNode(nodeName, currentUser);
+        (Node fileOrDirectory, Directory? parent) = GetNode(authToken, nodeName, currentUser);
 
         // Check that they can delete from the parent or the node itself
         currentUser.CanDelete(fileOrDirectory);
 
         // TODO: error check
-        if (parent != null && _disk.DeleteData(fileOrDirectory.LocalAddress)) {
+        if (parent != null && _disk.DeleteData(authToken, fileOrDirectory.Id)) {
             // This cannot be null, the check above verifies that
             parent.DeleteNode(fileOrDirectory);
-            _disk.UpdateDiskMount(parent);
+            _disk.UpdateDiskMount(authToken, parent);
         }
 
         Console.WriteLine("File or Directory was successfully deleted.");

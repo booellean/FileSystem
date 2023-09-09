@@ -5,8 +5,8 @@ class File : Node
     public string Extension;
     protected int[] Address;
 
-    public File(int id, string name, Group[] groups, int[] localAddress, int[] address, string extension) :
-    base(id, name, groups, localAddress)
+    public File(int id, string name, Group[] groups, int[] address, string extension) :
+    base(id, name, groups)
     {
         Address = address;
         Extension = extension;

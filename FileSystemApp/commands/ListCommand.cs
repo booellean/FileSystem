@@ -9,9 +9,9 @@ class ListCommand: ICommand
         Receiver = receiver;
     }
     // Execute a read of the current working directory
-    public bool Execute(string[] arguments, ref string CWD, ref int userId)
+    public bool Execute(string[] arguments, ref string CWD, ref int userId, ref string authToken)
     {
-        Receiver.ReadNode(CWD, userId);
+        Receiver.ReadNode(authToken, CWD, userId);
         
         return true;
     }
