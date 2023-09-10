@@ -1,17 +1,32 @@
 namespace FileSystemApp;
+using System.Text.Json.Serialization;
 
 abstract class Node : IUnique, IGroups
 {
+    [JsonPropertyName("id")]
     public int Id { get; }
+    [JsonPropertyName("name")]
     public string Name { get; }
+    [JsonPropertyName("userPermissions")]
+    public Dictionary<string, string>? UserPermissions { get; }
     protected Dictionary<int, CRUDX> Permissions = new Dictionary<int, CRUDX>();
+    [JsonPropertyName("groups")]
     public Group[] Groups { get; }
 
-    public Node(int id, string name, Group[] groups)
+    [JsonConstructor]
+    public Node(int id, string name, Group[] groups, Dictionary<string, string>? userPermissions)
     {
         Id = id;
         Name = name;
         Groups = groups;
+        UserPermissions = userPermissions;
+
+        if (UserPermissions != null) {
+            foreach(KeyValuePair<string, string> entry in UserPermissions)
+            {
+                Permissions.Add(int.Parse(entry.Key), new CRUDX(entry.Value));
+            }
+        }
     }
 
     // Common functions amongst files and directories

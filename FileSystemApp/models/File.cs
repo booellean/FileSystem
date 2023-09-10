@@ -1,14 +1,15 @@
 namespace FileSystemApp;
+using System.Text.Json.Serialization;
 
 class File : Node
 {
+    [JsonPropertyName("extension")]
     public string Extension;
-    protected int[] Address;
 
-    public File(int id, string name, Group[] groups, int[] address, string extension) :
-    base(id, name, groups)
+    [JsonConstructor]
+    public File(int id, string name, Group[] groups, int[] address, string extension, Dictionary<string, string>? userPermissions = null) :
+    base(id, name, groups, userPermissions)
     {
-        Address = address;
         Extension = extension;
     }
 

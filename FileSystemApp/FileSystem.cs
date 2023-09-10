@@ -77,15 +77,10 @@ class FileSystem
             Groups = _disk.GetGroups(authToken);
             Users = _disk.GetUsers(authToken);
 
-            for (int i = 0; i < Groups.Length; i++)
-            {
-                Console.WriteLine(Groups[i].Name);
-            }
+            // Mount Root
+            Root = (Directory)_disk.MountDisk(authToken);
 
-            // // Mount Root
-            // Root = (Directory)_disk.MountDisk(authToken);
-
-            // // Add Children
+            // Add Children
             // _disk.MountDiskChildren(authToken, Root);
         }
     }

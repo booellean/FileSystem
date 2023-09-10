@@ -1,6 +1,5 @@
-using System.Text.Json.Serialization;
-
 namespace FileSystemApp;
+using System.Text.Json.Serialization;
 
 class Group: IUnique, IPermissions
 {

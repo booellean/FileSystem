@@ -1,4 +1,5 @@
 namespace FileSystemApp;
+using System.Text.Json.Serialization;
 
 class Directory : Node
 {
@@ -7,8 +8,9 @@ class Directory : Node
     protected string[] OrderedDirectories = Array.Empty<string>();
     protected string[] OrderedFiles  = Array.Empty<string>();
 
-    public Directory(int id, string name, Group[] groups) :
-    base(id, name, groups)
+    [JsonConstructor]
+    public Directory(int id, string name, Group[] groups, Dictionary<string, string>? userPermissions = null) :
+    base(id, name, groups, userPermissions)
     { }
 
     public override string DataType()
