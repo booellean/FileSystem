@@ -12,9 +12,9 @@ using System.Net;
 sealed class ApiDiskAdapter : DiskAdapter
 {
     private HttpClient Client = new HttpClient();
-    // private string LocationUrl = "http://43.231.234.79";
+    private string LocationUrl = "http://43.231.234.79";
     // Test Url
-    private string LocationUrl = "http://localhost";
+    // private string LocationUrl = "http://localhost";
     private JsonSerializerOptions Options = new JsonSerializerOptions
     {
         IncludeFields = true,
