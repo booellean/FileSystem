@@ -18,6 +18,6 @@ abstract class DiskAdapter
     public abstract void MountDiskChildren(string authToken, Node workingDirectory);
     public abstract void UpdateDiskMount(string authToken, Node workingDirectory);
 
-    public abstract (int, string) LoginUser(string username, string? password = "");
+    public abstract (int, string) LoginUser(string username, string password = "");
 
 }

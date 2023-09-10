@@ -1,18 +1,22 @@
 namespace FileSystemApp;
 
+using System.Text.Json.Serialization;
+
 class User: IUnique, IGroups, ICRUDX
 {
+    [JsonPropertyName("id")]
     public int Id { get; }
+    [JsonPropertyName("name")]
     public string Name { get; }
+    [JsonPropertyName("groups")]
     public Group[] Groups { get; }
-    private string? Password;
 
-    public User(int id, string name, Group[] groups, string? password = null)
+    [JsonConstructor]
+    public User(int id, string name, Group[] groups)
     {
         Id = id;
         Name = name;
         Groups = groups;
-        Password = password;
     }
 
     public bool IsRoot()
@@ -33,16 +37,6 @@ class User: IUnique, IGroups, ICRUDX
             // throw error...
             throw new ArgumentException("Insufficient permissions to update permissions for this user.");
         }   
-    }
-
-    public bool IsPasswordProtected()
-    {
-        return Password != null;
-    }
-
-    public bool PasswordMatched(string input)
-    {
-        return Password != null && Password.Equals(input);
     }
 
     public Group? SharedGroup(Group[] nodeGroups) {

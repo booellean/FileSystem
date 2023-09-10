@@ -12,7 +12,7 @@ class LoginCommand: ICommand
     public bool Execute(string[] arguments, ref string CWD, ref int userId, ref string authToken)
     {
         Console.WriteLine("Please Enter your login information");
-        (int id, string token) = Receiver.LoginUser(userId, authToken);
+        (int id, string token) = Receiver.LoginUser();
         userId = id;
         authToken = token;
 

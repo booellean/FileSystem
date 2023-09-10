@@ -1,19 +1,28 @@
+using System.Text.Json.Serialization;
+
 namespace FileSystemApp;
 
 class Group: IUnique, IPermissions
 {
-    public int Id { get; }
-    public string Name { get; }
-    public int Weight { get; }
-    public CRUDX Permissions { get; }
-
-    public Group (int id, string name, int weight, string permissions)
+    [JsonConstructor]
+    public Group (int id, string name, int weight, string permissionString)
     {
         Id = id;
         Name = name;
         Weight = weight;
-        Permissions = new CRUDX(permissions);
+        PermissionString = permissionString;
+        Permissions = new CRUDX(PermissionString);
     }
+
+    [JsonPropertyName("id")]
+    public int Id { get; }
+    [JsonPropertyName("name")]
+    public string Name { get; }
+    [JsonPropertyName("weight")]
+    public int Weight { get; }
+    [JsonPropertyName("permissionString")]
+    public string PermissionString { get; }
+    public CRUDX Permissions { get; }
 
     public bool IsRootGroup()
     {

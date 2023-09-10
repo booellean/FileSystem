@@ -1,62 +1,99 @@
 namespace FileSystemApp;
 
+using System.IO;
+using System.Text;
+using System.Text.Json;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net;
 
 // Handles Updating Disk Data and returning that data cast as a user, node, or group
 // Will also update directory node locations
 sealed class ApiDiskAdapter : DiskAdapter
 {
     private HttpClient Client = new HttpClient();
-    private string LocationUrl = "http://43.231.234.79";
+    // private string LocationUrl = "http://43.231.234.79";
+    private string LocationUrl = "http://localhost";
 
     public ApiDiskAdapter() : base()
     {
         // Default Default Headers
         Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        Client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
-        // Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
+    }
+    
+    public class Test {
+        public string Name;
+        public string Password;
     }
 
-    public override (int, string) LoginUser(string username, string? password = "")
+    public override (int, string) LoginUser(string username, string password = "")
     {
-        // attempt to login
-        // save bearer token
-        // send back User
-        return (1, "");
+        // Authorize a Login
+        string body = "{\"name\": \""+username+"\", \"password\": \""+password+"\" }";
+        HttpRequestMessage webRequestToken = new HttpRequestMessage(HttpMethod.Post, LocationUrl + "/api/auth/login"){
+            Content = new StringContent(body, Encoding.UTF8, "application/json")
+        };
+
+        HttpResponseMessage response = Client.Send(webRequestToken);
+        StreamReader reader = new StreamReader(response.Content.ReadAsStream());
+        string token = reader.ReadToEnd();
+
+        if (response.StatusCode == HttpStatusCode.MethodNotAllowed) {
+            Message message = JsonSerializer.Deserialize<Message>(token);
+            throw new PasswordNeededException(message?.message);
+        } else {
+            HttpRequestMessage webRequestUser = new HttpRequestMessage(HttpMethod.Get, LocationUrl + "/api/user");
+            SetAuthorization(token);
+
+            response = Client.Send(webRequestUser);
+            reader = new StreamReader(response.Content.ReadAsStream());
+
+            int userId = int.Parse(reader.ReadToEnd());
+            return (userId, token);
+        }
     }
 
-    public override User[] GetUsers(string authToken) {
-        // User[] users = new User[_debugData.Users.Length];
+    public override User[] GetUsers(string authToken)
+    {
+        HttpRequestMessage webRequest = new HttpRequestMessage(HttpMethod.Get, LocationUrl + "/api/users");
+        SetAuthorization(authToken);
 
-        // // Assign Fake Users
-        // for (int ii = 0; ii < _debugData.Users.Length; ii++) {
-        //     FakeUser buildData = _debugData.Users[ii];
-        //     Group[] newUserGroups = GetObjectGroups(buildData.Groups);
+        HttpResponseMessage response = Client.Send(webRequest);
+        StreamReader reader = new StreamReader(response.Content.ReadAsStream());
 
-        //     // Create the new users
-        //     User newUser = new User(buildData.Id, buildData.Name, newUserGroups, buildData.Password);
-        //     users[ii] = newUser;
-        // }
+        string jsonString = reader.ReadToEnd();
+        Console.WriteLine(jsonString);
+        User[]? users = JsonSerializer.Deserialize<User[]>(jsonString);
 
-        // return users;
-        // TODO:::
-        return new User[3];
+        if(users != null) {
+            for (int i = 0; i < users.Length; i++) {
+                Console.WriteLine(users[i].Id);
+                for(int j = 0; j < users[i].Groups.Length; j++) {
+                    Console.WriteLine("Group");
+                    Console.WriteLine(users[i].Groups[j].Name);
+                }
+            }
+        }
+
+
+        if (users == null) throw new Exception("Unknown Error.");
+        
+        return users;
     }
 
     public override Group[] GetGroups(string authToken) {
-        // Group[] groups = new Group[_debugData.Groups.Length];
+        HttpRequestMessage webRequest = new HttpRequestMessage(HttpMethod.Get, LocationUrl + "/api/groups");
+        SetAuthorization(authToken);
 
-        // // Assign Fake Groups
-        // for (int ii = 0; ii < _debugData.Groups.Length; ii++) {
-        //     FakeGroup buildData = _debugData.Groups[ii];
-        //     Group newGroup = new Group(buildData.Id, buildData.Name, buildData.Weight, buildData.Permissions);
-        //     groups[ii] = newGroup;
-        // }
+        HttpResponseMessage response = Client.Send(webRequest);
+        StreamReader reader = new StreamReader(response.Content.ReadAsStream());
 
-        // return groups;
-        // TODO:::
-        return new Group[3];
+        string jsonString = reader.ReadToEnd();
+        Group[]? groups = JsonSerializer.Deserialize<Group[]>(jsonString);
+
+        if (groups == null) throw new Exception("Unknown Error.");
+        
+        return groups;
     }
 
     public override int AddData(string authToken, string nodeName, int parentId, Group[] groups) {
@@ -297,4 +334,9 @@ sealed class ApiDiskAdapter : DiskAdapter
 
     //     return newChildAddress;
     // }
+
+    private void SetAuthorization(string token)
+    {
+        Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+    }
 }

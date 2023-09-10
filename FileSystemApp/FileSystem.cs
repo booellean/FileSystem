@@ -31,26 +31,43 @@ class FileSystem
         }
     }
 
-    public (int, string) LoginUser(int requestingUserId, string requestingUserToken)
+    public (int, string) LoginUser()
     {
         string? input = Console.ReadLine();
 
         if (input != null) {
             if (input.Equals("cancel")) {
                 Console.WriteLine("Cancelling Login Attempt.\n");
-                return (requestingUserId, requestingUserToken);
+                return (-1,"");
             }
 
             try {
                 return _disk.LoginUser(input);
+            } catch(PasswordNeededException error) {
+                Console.WriteLine(error.Message);
+                return LoginUserWithPassword(input);
             } catch(Exception error) {
-                // TODO: Fix...
-                Console.WriteLine("WILL FIX");
+                Console.WriteLine(error.ToString());
             }
             
         }
 
-        return (requestingUserId, requestingUserToken);
+        return (-1,"");
+    }
+
+    private (int, string) LoginUserWithPassword(string username, int attempts = 3)
+    {
+        if (attempts < 1) throw new Exception("Password attempt failed. Unauthorized.");
+
+        string? password = Console.ReadLine();
+        try {
+            return _disk.LoginUser(username, password);
+        } catch(PasswordNeededException error) {
+            Console.WriteLine(error.Message);
+        }
+
+        attempts--;
+        return LoginUserWithPassword(username, attempts);
     }
 
     public void FinalizeSetup(string authToken)
@@ -60,11 +77,16 @@ class FileSystem
             Groups = _disk.GetGroups(authToken);
             Users = _disk.GetUsers(authToken);
 
-            // Mount Root
-            Root = (Directory)_disk.MountDisk(authToken);
+            for (int i = 0; i < Groups.Length; i++)
+            {
+                Console.WriteLine(Groups[i].Name);
+            }
 
-            // Add Children
-            _disk.MountDiskChildren(authToken, Root);
+            // // Mount Root
+            // Root = (Directory)_disk.MountDisk(authToken);
+
+            // // Add Children
+            // _disk.MountDiskChildren(authToken, Root);
         }
     }
 
