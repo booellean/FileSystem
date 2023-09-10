@@ -9,7 +9,7 @@ class Directory : Node
     protected string[] OrderedFiles  = Array.Empty<string>();
 
     [JsonConstructor]
-    public Directory(int id, string name, Group[] groups, Dictionary<string, string>? userPermissions = null) :
+    public Directory(int id, string name, Group[] groups, Dictionary<string, string>? userPermissions) :
     base(id, name, groups, userPermissions)
     { }
 

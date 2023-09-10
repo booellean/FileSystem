@@ -7,7 +7,7 @@ class File : Node
     public string Extension;
 
     [JsonConstructor]
-    public File(int id, string name, Group[] groups, int[] address, string extension, Dictionary<string, string>? userPermissions = null) :
+    public File(int id, string name, Group[] groups, Dictionary<string, string>? userPermissions, string extension) :
     base(id, name, groups, userPermissions)
     {
         Extension = extension;

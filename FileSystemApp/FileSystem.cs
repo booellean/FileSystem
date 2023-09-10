@@ -5,19 +5,11 @@ namespace FileSystemApp;
 class FileSystem
 {
     // Unique instances across all instantiations
-    protected static Directory? Root = null;
-    protected static Group[] Groups;
-    protected static User[] Users;
+    protected static Directory Root = new Directory(-1, "Null", new Group[0], null);
+    protected static Group[] Groups = new Group[0];
+    protected static User[] Users = new User[0];
     private static FileSystem _instance;
-    // DEBUG: This is fake data to login and write files/directories. Delete when reading from an actual disk
-    private static DiskAdapter _disk;
-
-    // The Mounting
-    private FileSystem()
-    {
-        // DEBUG: Instantiate our disk adapter
-        _disk = new ApiDiskAdapter();
-    }
+    private static DiskAdapter _disk = new ApiDiskAdapter();
 
     // Our Singleton!
     public static FileSystem Instance
@@ -72,7 +64,7 @@ class FileSystem
 
     public void FinalizeSetup(string authToken)
     {
-        if (Root == null) {
+        if (Root.Id == -1) {
             // Instantiate groups and users
             Groups = _disk.GetGroups(authToken);
             Users = _disk.GetUsers(authToken);
@@ -81,7 +73,7 @@ class FileSystem
             Root = (Directory)_disk.MountDisk(authToken);
 
             // Add Children
-            // _disk.MountDiskChildren(authToken, Root);
+            _disk.MountDiskChildren(authToken, Root);
         }
     }
 
@@ -142,9 +134,8 @@ class FileSystem
 
     // CRUD Directories
     // Create
-    public void CreateNode(string authToken, string nodeName, string directoryPath, int currentUserId)
+    public void CreateNode(string authToken, string nodeName, string nodeType, string directoryPath, int currentUserId)
     {
-        // TODO: fix this so we can create a file outside of CWD
         if (nodeName.Contains('/')) {
             // throw error...
             throw new ArgumentException("Cannot create directories recursively.");
@@ -156,18 +147,11 @@ class FileSystem
         // Check Read
         currentUser.CanCreate(CWD);
 
-        Node? node = null;
-
-        // TODO: If catch block goes off, revert the node Value
         try {
-            int nodeId = _disk.AddData(authToken, nodeName, CWD.Id, currentUser.Groups);
-            node = _disk.MountDisk(authToken, nodeId);
+            Node node = _disk.AddData(authToken, nodeName, nodeType, CWD.Id);
             CWD.AddNode(node);
             Console.WriteLine("Successfully created item.");
         } catch(Exception error) {
-            if (node != null) {
-                // If node was written, we want to make sure it wasn't added to the directory
-            }
             Console.WriteLine(error.Message);
         }
     }
@@ -191,20 +175,22 @@ class FileSystem
         (Node fileOrDirectory, Directory? parent) = GetNode(authToken, nodeName, currentUser);
         (Node destination, _) = GetNode(authToken, targetDirectory, currentUser);
 
-        // Check user can create here
-        currentUser.CanCreate(destination);
-        // Check user can delete from there
-        currentUser.CanDelete(fileOrDirectory);
-
         // TODO: If catch block goes off, revert the node Value
         try {
             if (parent != null) {
+                // Checks before we actually make our calls
+                // Check user can create in wanted destination
+                currentUser.CanCreate(destination);
+                // Check user can delete from current location
+                currentUser.CanUpdate(parent);
+                // Check user can update the node
+                currentUser.CanUpdate(fileOrDirectory);
+
                 // Get our node's new location and the old location's new nodes
-                _disk.MoveData(authToken, fileOrDirectory.Id, destination.Id);
+                _disk.MoveData(authToken, fileOrDirectory, destination.Id);
 
                 // Delete the node from the old directory and update child addresses
                 parent.DeleteNode(fileOrDirectory);
-                _disk.UpdateDiskMount(authToken, parent);
 
                 // Assign the address to the new location, then add it to the destinatino node
                 destination.AddNode(fileOrDirectory);
@@ -236,7 +222,7 @@ class FileSystem
         // Check can update
         currentUser.CanUpdate(node);
 
-        _disk.UpdateData(authToken, node.Id, permissions, targetUser.Id.ToString());
+        _disk.UpdateData(authToken, node, permissions, targetUser.Id.ToString());
         node.UpdatePermissions(targetUser.Id, permissions);
         Console.WriteLine("Successfully updated permissions.");
     }
@@ -250,11 +236,10 @@ class FileSystem
         // Check that they can delete from the parent or the node itself
         currentUser.CanDelete(fileOrDirectory);
 
-        // TODO: error check
-        if (parent != null && _disk.DeleteData(authToken, fileOrDirectory.Id)) {
+        if (parent != null) {
+            _disk.DeleteData(authToken, fileOrDirectory);
             // This cannot be null, the check above verifies that
             parent.DeleteNode(fileOrDirectory);
-            _disk.UpdateDiskMount(authToken, parent);
         }
 
         Console.WriteLine("File or Directory was successfully deleted.");
